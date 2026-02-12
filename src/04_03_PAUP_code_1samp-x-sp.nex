@@ -1,0 +1,28 @@
+BEGIN SETS;
+	TAXPARTITION SPECIES =
+		Rophe         : 11686_Rophe_h,
+		Rmars         : 13600_Rmars_h,
+		Chaerocina    : 6374_Chadoh,
+		Euchloron     : 6376_Eucmeg,
+		Hippotion     : 503_Hipcel 6382_Hipech,
+		Theretra      : 6381_Thesil 6386_Theale 6386_Theale,
+		Xylophanes    : 6377_Xylfal 6384_Xylter 6391_Xylpor,
+		Hannei        : 6945_Hannei,
+		Hbiguttata    : 4738_Hbiguttata,
+		Hcalida       : Sa190la_Hcalida,
+		Heuphorbiarum : 3722_Heuphorbiarum,
+		Hgallii       : 489_Hgallii,
+		Hlineata      : 4063_Hlineata,
+		Hlivornica    : 13252_Hlivornica,
+		Hlivornicoides: 9001_Hlivornicoides,
+		Hnicea        : 6046_Hnicaea,
+		Hperkinsi     : Cg13_Hperkinsi,
+		Hvespertilio  : 13068_Hvespertilio,
+		Hwilsoni      : Cg74_Hwilsoni;
+END;
+
+BEGIN PAUP;
+  svdq seed=666 nthreads=40 evalq=all treeInf=QFM taxpartition=SPECIES bootstrap=standard nreps=100 mrpFile=mrp.txt qfile=quartet.qmc treefile=treefile.nex;
+  SaveTrees file=treefile_consensus.nwk format=Newick supportValues=Both trees=all;
+END;
+
