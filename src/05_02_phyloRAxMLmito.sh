@@ -71,6 +71,48 @@ for dataset in full 1samp-x-sp 1samp-x-sp_noRhodafra; do
                 iqtree -t $RESULTS/mito_raxml_$dataset.raxml.support \
                        --scf 100 -T 20 \
                        -s $MSA/aln_mafft_mitogenomes_$dataset.fa ;
+                echo "Getting gene-concordance factores (with IQtree)..."
+                ## Get genes from each sample's fasta file
+                mkdir $RESULTS/mito_tmp/
+                for fas in $(ls $DATA\/*.*fas); do
+                        fas=$(basename "$fas")
+                        seqkit subseq --bed $BED $DATA/$fas \
+                                      -o $RESULTS/mito_tmp/$fas;
+                        seqkit split --quiet --by-id $RESULTS/mito_tmp/$fas;
+                        rm $RESULTS/mito_tmp/$fas
+                done;
+                for gene in $(awk '{print $3}' $BED); do
+                        for fas in $(ls $RESULTS/mito_tmp/*.fas.split/*-$gene\_*_*.fas); do
+                                sp=$(basename "${fas%.part_*}");
+                                gene_i=$(basename "${fas#*part_}");
+                                if [[ $dataset =~ 1samp-x-sp_noRhodafra && $sp =~ [0-9]*_R.* ]]; then continue; fi;
+                                if [[ $dataset =~ 1samp-x-sp* ]] && ! grep -qF $sp $WS/results/03_variant_calling/00_best_samples_per_species.txt; then continue; fi;
+                                cat $fas \
+                                  | sed "s/^>OX.*/>$sp/g" \
+                                  >> $RESULTS/mito_tmp/$gene_i;
+                        done;
+                done;
+                ## Run RAxML for each gene
+                for fas in $(ls $RESULTS/mito_tmp/*.fas); do
+                        fas=$(basename $fas);
+                        mafft --thread 5 --quiet $RESULTS/mito_tmp/$fas \
+                          > $RESULTS/mito_tmp/ALN_$fas \
+                          && raxml-ng --msa $RESULTS/mito_tmp/ALN_$fas \
+                                      --data-type DNA --search \
+                                      --model GTR+I+G4 --tree pars{10} \
+                                      --threads 5 --log ERROR \
+                                      --prefix $RESULTS/mito_tmp/TREE_$fas \
+                          && cat $RESULTS/mito_tmp/TREE_$fas.raxml.bestTree \
+                               >> $RESULTS/mito_raxml_$dataset\_geneTrees.nwk &
+                done
+                wait
+                rm -r $RESULTS/mito_tmp/
+                ## calcluate gCF
+                iqtree -t $RESULTS/mito_raxml_$dataset.raxml.support \
+                       --gcf $RESULTS/mito_raxml_$dataset\_geneTrees.nwk \
+                       -s $MSA/aln_mafft_mitogenomes_$dataset.fa \
+                       -T 20 \
+                       --prefix $RESULTS/mito_raxml_$dataset\_gCF;
 
 		echo "DONE!"
 		echo "Output: $RESULTS/mito_raxml_$dataset.*"
