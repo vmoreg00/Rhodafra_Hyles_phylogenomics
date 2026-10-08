@@ -19,19 +19,19 @@ with historical DNA. A case study on the phylogenomics of *Hyles* Hübner and
  +-- envirs/   # conda and python environments.
  +-- logs/     # SLURM log files [not included; to be filled when the code is run]
  +-- results/  # [Not included; can be regenerated running the code]
- +-- src/      # bash scripts and other softwares used in the analyses
+ +-- src/      # bash scripts and other software used in the analyses
 ```
 
 ## Setup
 
 ### Data download
-All sequence data was generated during the study and is publicaly available in the
+All sequence data were generated during the study and are publicly available in the
 ENA Archive (Project number: PRJEB103802).
 
 
 | **Outgroup**                  | ***Hyles***                              | ***Rhodafra***         |
 |:------------------------------|:-----------------------------------------|:-----------------------|
-| *Chaerocina dohertyi* - 6374  | *H. annei* - 1332,6683,6947,6945         | *R. opheletes* - 11686 |
+| *Chaerocina dohertyi* - 6374  | *H. annei* - 1332,6683,6947,6945         | *R. opheletes* - 11683 |
 | *Euchloron megaera* - 6376    | *H. biguttata* - 508,510,4738            | *R. opheletes* - 12003 |
 | *Hippotion echeclus* - 6382   | *H. calida* - 4349, ms852,Sa190la        | *R. opheletes* - 13597 |
 | *Hippotion celerio* - 503     | *H. euphorbiarum* - 3623,3722,4379       | *R. opheletes* - 13598 |
@@ -45,21 +45,12 @@ ENA Archive (Project number: PRJEB103802).
 |                               | *H. wilsoni* - cg74,cg75                 |                        |
 
 
-The following code allows to download the data and rename the files properly.
-
-```
-...
-...
-...
-
-```
-
 ### Environments and software
 
-In order to run the code in this repository, is it also necessary to download some
-software and to create some conda and python environments. All packages installed
-in each used environment is available in the folder `envirs`. The following code
-install all these environments and download all necessary software to run the code
+To run the code in this repository, it is also necessary to download some
+software and to create some conda and Python environments. All packages installed
+in each used environment are available in the folder `envirs`. The following code
+installs all these environments and downloads all necessary software to run the code
 
 
 ```
@@ -108,11 +99,11 @@ git clone https://github.com/simonhmartin/twisst src/twisst
 ```
 
 ### Important note
-The analyses was run at the HPC at TUD and the scripts are configured
-to work in that specific cluster. You must fix first the loaded modules
+The analyses were run at the HPC at TUD, and the scripts are configured
+to work in that specific cluster. You must first fix the loaded modules
 or remove them if you are not working on a Slurm machine. Besides,
 you have to set the variable `WS` in every script accordingly.
-All scrips are prepared to be run from whichever path.
+All scripts are prepared to be run from whichever path.
 
 ## Executing the pipeline
 
@@ -121,14 +112,14 @@ They are named with numbers as prefixes and are designed to be run in that
 specific order:
  
 Other `.py`, `.R` or `.nex` scripts are run within the `*.sh` files.
-For example the script `06_02_plot_twisst.R` is run during the execution of
+For example, the script `06_02_plot_twisst.R` is run during the execution of
 `06_02_twisst_introgression.sh`
 
   1. **Preprocessing and Quality Control**
       * `01_freshDNA_preprocessing.sh`
-        Perform QC, filtering and trimming of fresh DNA raw reads
+        Perform QC, filtering, and trimming of fresh DNA raw reads
       * `01_hDNA_preprocessing.sh`
-        Perform QC, filtering and trimming of hDNA raw reads
+        Perform QC, filtering, and trimming of hDNA raw reads
      
   1. **Mapping**
       * `02_00_hDNA_mapping_optimization.sh` & `02_00.01_summary_optimization.py`
@@ -138,8 +129,8 @@ For example the script `06_02_plot_twisst.R` is run during the execution of
         Index the reference genome
       * `02_02_mapping_mergedReads.sh`; `02_03_mapping_unassembledReads.sh`; `02_04_mergeResults.sh`
         Map the hDNA samples against the reference genome in two steps.
-        First the paired & merged reads; then the paired & un-merged reads.
-        Finnaly, it merges the assemblies into a single `bam` file
+        First, the paired & merged reads; then the paired & unmerged reads.
+        Finally, it merges the assemblies into a single `bam` file
       * `02_05_mapping_freshDNA.sh`
         Map the reads of the fresh-DNA samples
         
@@ -150,7 +141,7 @@ For example the script `06_02_plot_twisst.R` is run during the execution of
         per species),, `1samp-x-sp_noRhodafra` (as 1samp-x-sp, but excluding
         *Rhodafra* [hDNA] samples) and `strict` (as 1samp-x-sp, but applying stricter
         filtering rules). Each dataset is also thinned, selecting only 1 SNP
-        each 1000 bp.
+        every 1000 bp.
         
   1. **Autosomes phylogenies**
       * `04_00_getConsensus.sh`
@@ -162,7 +153,7 @@ For example the script `06_02_plot_twisst.R` is run during the execution of
       * `04_03_SVDquartets`; `04_03_PAUP_code_1samp-x-sp.nex`; `04_03_PAUP_code_full.nex`
         Run the SVDquartets phylogeny. The base PAUP code is in `.nex` scripts.
       * `04_04_SNAPP_bayesian.sh`
-        Run the SNAPPER bayesian phylogeny and estimate node dates.
+        Run the SNAPPER Bayesian phylogeny and estimate node dates.
       * `04_05_ASTRAL_slidingwindows.sh`
         Get the "gene"-trees in sliding windows and run ASTRAL phylogeny
         
@@ -170,15 +161,19 @@ For example the script `06_02_plot_twisst.R` is run during the execution of
       * `05_00_getConsensusMito.sh`
         Get the consensus sequences of the mitochondria
       * `05_02_phyloRAxMLmito.sh`
-        Align the mitchondrial genomes and run the Maximum Likelihood phylogeny with RAxML.
+        Align the mitochondrial genomes and run the Maximum Likelihood phylogeny with RAxML.
         
   1. **Introgression/ILS assesement**
       * `06_01_Dtrios_introgression.sh`
         Run the Dtrios analysis
       * `06_02_twisst_introgression.sh`; `06_02_plot_twisst.R`
-        Run the TWISST analyisis for a reduced phylogeny with *Rhodafra* and two *Hyles* species
+        Run the TWISST analysis for a reduced phylogeny with *Rhodafra* and two *Hyles* species
       * `06_04_QuIBL.sh`; `06_04.1_plotQuIBL.R`
         Run the QuIBL analysis.
       * `06_05_HyDe.sh`
         Run the HyDe analysis.
+  
+  1. **Phylogeographic analyses**
+      * `07_ancestral_range_reconstruction.sh`; `07_biogeobears.R`
+        Run the BioGEOBears analysis
 
