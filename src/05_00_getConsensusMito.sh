@@ -77,3 +77,14 @@ if [ ! -e $RESULTS/mitogenomes_1samp-x-sp.fa ]; then
 		fi;
 	done
 fi;
+
+# get annotation
+if [ ! -d $WS/results/05_MITO_phylogeny/00_annotation ]; then
+        mkdir -p $WS/results/05_MITO_phylogeny/00_annotation;
+        runmitos --input $WS/data/refgenome/DeiElpe2.1_mito.fna \
+                 --code 5 \
+                 --outdir $WS/results/05_MITO_phylogeny/00_annotation \
+                 --intron 0 --oril 0 --orih 0 --finovl 50  --fragovl 0.2 \
+                 --fragfac 10.0  --evalue 2.0 --cutoff 0.5 --clipfac 10.0 \
+                 --ncev 0.01  --maxtrnaovl 50 --maxrrnaovl 50  --noplots;
+fi;
